@@ -37,6 +37,8 @@
 (defvar fabric-pattern-cache nil
   "Cache for storing fabric patterns.")
 
+(defvar fabric-cli-path "~/.local/bin/fabric")
+
 (defun fabric-get-patterns ()
   "Get the list of patterns from the fabric command, using a cache."
   (interactive)
@@ -45,7 +47,7 @@
         (message "Using cached patterns")
         fabric-pattern-cache)
     (message "Getting patterns")
-    (shell-command "/mnt/s/.local/bin/fabric --list" "*fabric-patterns*")
+    (shell-command fabric-cli-path "--list" "*fabric-patterns*")
     (let ((patterns (with-current-buffer "*fabric-patterns*"
                       (split-string (buffer-string) "\n" t))))
       (kill-buffer "*fabric-patterns*")
@@ -62,7 +64,7 @@
   "List the patterns from the fabric command"
   (interactive)
   (message "Getting patterns")
-  (shell-command "/mnt/s/.local/bin/fabric --list" "*fabric-patterns*")
+  (shell-command fabric-cli-path "--list" "*fabric-patterns*")
   (let ((patterns (with-current-buffer "*fabric-patterns*"
                     (split-string (buffer-string) "\n" t))))
     ;; show the buffer
@@ -99,8 +101,8 @@
         (write-region content nil temp-file)
         ;; check if pattern is nil
         (if (string= pattern "NONE")
-            (shell-command (format "cat %s | /mnt/s/.local/bin/fabric -s &" temp-file) "*fabric-output*")
-          (shell-command (format "cat %s | /mnt/s/.local/bin/fabric -s --pattern %s &" temp-file pattern) "*fabric-output*"))
+            (shell-command (format "cat %s | %s -s &" temp-file fabric-cli-path) "*fabric-output*")
+          (shell-command (format "cat %s | %s -s --pattern %s &" temp-file fabric-cli-path pattern) "*fabric-output*"))
         (delete-file temp-file)
         )
       )))
@@ -127,8 +129,8 @@
         (write-region content nil temp-file)
         ;; check if pattern is nil
         (if (string= pattern "NONE")
-            (shell-command (format "cat %s | /mnt/s/.local/bin/fabric -s &" temp-file ) "*fabric-output*")
-          (shell-command (format "cat %s | /mnt/s/.local/bin/fabric -s --pattern %s &" temp-file pattern) "*fabric-output*")
+            (shell-command (format "cat %s | %s -s &" temp-file fabric-cli-path ) "*fabric-output*")
+          (shell-command (format "cat %s | %s -s --pattern %s &" temp-file fabric-cli-path pattern) "*fabric-output*")
           )
         (delete-file temp-file))
       )))
@@ -144,10 +146,11 @@
       (insert content)
       (fabric-mode)
       (pop-to-buffer (current-buffer)))))
-(spacemacs/set-leader-keys "aib" 'fabric-run-pattern-on-buffer)
-(spacemacs/set-leader-keys "aiR" 'fabric-run-pattern-on-region)
-(spacemacs/set-leader-keys "aiP" 'fabric-get-patterns)
-(spacemacs/set-leader-keys "aic" 'fabric-clipboard-to-buffer)
+
+;(spacemacs/set-leader-keys "aib" 'fabric-run-pattern-on-buffer)
+;(spacemacs/set-leader-keys "aiR" 'fabric-run-pattern-on-region)
+;(spacemacs/set-leader-keys "aiP" 'fabric-get-patterns)
+;(spacemacs/set-leader-keys "aic" 'fabric-clipboard-to-buffer)
 ;; suggest other keybindings
 
 ;;; fabric.el ends here
